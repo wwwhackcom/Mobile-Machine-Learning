@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.wwwhackcom.ml.helper.assetsToBitmap
+import net.wwwhackcom.ml.helper.drawWithRectangle
+import net.wwwhackcom.ml.helper.processFaceDetection
 import net.wwwhackcom.ml.ui.theme.MLExerciseTheme
 
 @Composable
@@ -88,7 +92,21 @@ fun FaceDetectionScreen(modifier: Modifier = Modifier) {
             Button(
                 modifier = Modifier.padding(20.dp),
                 onClick = {
-
+                    val bitmap = imageBitmap?.asAndroidBitmap()
+                    bitmap?.let {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            processFaceDetection(
+                                bitmap,
+                                onSuccessListener = { faces ->
+                                    bitmap.apply {
+                                        imageBitmap = drawWithRectangle(faces)?.asImageBitmap()
+                                    }
+                                }, onFailListener = { e ->
+                                    e.printStackTrace()
+                                }
+                            )
+                        }
+                    }
                 }
             ) {
                 Text("Detect")
