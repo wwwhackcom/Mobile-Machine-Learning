@@ -1,0 +1,11 @@
+# GoogleMLKit not support SPM
+
+platform :ios, '12.0'
+use_frameworks!
+
+
+target 'MLExercise' do
+    pod 'GoogleMLKit/FaceDetection'
+    pod 'GoogleMLKit/TextRecognition'
+end
+
